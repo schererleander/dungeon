@@ -3,13 +3,44 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "/home/schererleander/Developer/raylib-shooter/assets/maps/debug.tmx",
+    "activeFile": "/home/schererleander/Developer/dungeon-crawler/assets/maps/debug.tmx",
     "expandedProjectPaths": [
     ],
     "file.lastUsedOpenFilter": "Alle Dateien (*)",
     "fileStates": {
         "": {
             "scaleInDock": 1
+        },
+        "/home/schererleander/Developer/dungeon-crawler/assets/maps/debug.tmx": {
+            "scale": 5.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 239.9090909090909,
+                "y": 239.9090909090909
+            }
+        },
+        "/home/schererleander/Developer/dungeon-crawler/assets/tilesets/animated_props.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 3
+        },
+        "/home/schererleander/Developer/dungeon-crawler/assets/tilesets/elf.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 4
+        },
+        "/home/schererleander/Developer/dungeon-crawler/assets/tilesets/grounds.tsx": {
+            "scaleInDock": 1
+        },
+        "/home/schererleander/Developer/dungeon-crawler/assets/tilesets/pickup_items_animated.tsx": {
+            "scaleInDock": 5.5,
+            "scaleInEditor": 3
+        },
+        "/home/schererleander/Developer/dungeon-crawler/assets/tilesets/props.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 3
+        },
+        "/home/schererleander/Developer/dungeon-crawler/assets/tilesets/walls.tsx": {
+            "scaleInDock": 3,
+            "scaleInEditor": 3
         },
         "/home/schererleander/Developer/raylib-shooter/assets/maps/debug.tmx": {
             "scale": 5.5,
@@ -70,36 +101,35 @@
     "frame.defaultDuration": 200,
     "last.exportedFilePath": "/home/schererleander/Developer/raylib-shooter/assets/maps",
     "last.externalTilesetPath": "/home/schererleander/Developer/raylib-shooter/assets/tilesets",
-    "last.imagePath": "/home/schererleander/Developer/raylib-shooter/assets/sprites",
+    "last.imagePath": "/home/schererleander/Developer/dungeon-crawler/assets/sprites",
     "map.height": 30,
     "map.lastUsedExportFilter": "JSON-Kartendateien (*.tmj *.json)",
     "map.lastUsedFormat": "tmx",
     "map.tileHeight": 16,
     "map.tileWidth": 16,
     "openFiles": [
-        "/home/schererleander/Developer/raylib-shooter/assets/maps/debug.tmx",
-        "/home/schererleander/Developer/raylib-shooter/assets/tilesets/grounds.tsx",
-        "/home/schererleander/Developer/raylib-shooter/assets/tilesets/props.tsx",
-        "/home/schererleander/Developer/raylib-shooter/assets/tilesets/surground.tsx",
-        "/home/schererleander/Developer/raylib-shooter/assets/tilesets/walls.tsx",
-        "/home/schererleander/Developer/raylib-shooter/assets/tilesets/animated_props.tsx",
-        "/home/schererleander/Developer/raylib-shooter/assets/tilesets/bat.tsx",
-        "/home/schererleander/Developer/raylib-shooter/assets/tilesets/projectiles_animated.tsx",
-        "/home/schererleander/Developer/raylib-shooter/assets/tilesets/pickup_items_animated.tsx"
+        "/home/schererleander/Developer/dungeon-crawler/assets/maps/debug.tmx",
+        "/home/schererleander/Developer/dungeon-crawler/assets/tilesets/walls.tsx",
+        "/home/schererleander/Developer/dungeon-crawler/assets/tilesets/animated_props.tsx",
+        "/home/schererleander/Developer/dungeon-crawler/assets/tilesets/pickup_items_animated.tsx",
+        "/home/schererleander/Developer/dungeon-crawler/assets/tilesets/props.tsx",
+        "/home/schererleander/Developer/dungeon-crawler/assets/tilesets/elf.tsx"
     ],
     "project": "dungeon crawler.tiled-project",
-    "property.type": "bool",
+    "property.type": "string",
     "recentFiles": [
+        "/home/schererleander/Developer/dungeon-crawler/assets/tilesets/elf.tsx",
+        "/home/schererleander/Developer/dungeon-crawler/assets/tilesets/props.tsx",
+        "/home/schererleander/Developer/dungeon-crawler/assets/tilesets/pickup_items_animated.tsx",
+        "/home/schererleander/Developer/dungeon-crawler/assets/tilesets/animated_props.tsx",
+        "/home/schererleander/Developer/dungeon-crawler/assets/tilesets/walls.tsx",
+        "/home/schererleander/Developer/dungeon-crawler/assets/maps/debug.tmx",
         "/home/schererleander/Developer/raylib-shooter/assets/tilesets/pickup_items_animated.tsx",
         "/home/schererleander/Developer/raylib-shooter/assets/tilesets/projectiles_animated.tsx",
         "/home/schererleander/Developer/raylib-shooter/assets/tilesets/bat.tsx",
         "/home/schererleander/Developer/raylib-shooter/assets/tilesets/animated_props.tsx",
         "/home/schererleander/Developer/raylib-shooter/assets/tilesets/walls.tsx",
-        "/home/schererleander/Developer/raylib-shooter/assets/tilesets/surground.tsx",
-        "/home/schererleander/Developer/raylib-shooter/assets/tilesets/props.tsx",
-        "/home/schererleander/Developer/raylib-shooter/assets/tilesets/grounds.tsx",
-        "/home/schererleander/Developer/raylib-shooter/assets/maps/debug.tmx",
-        "/home/schererleander/Developer/raylib-shooter/assets/tilesets/weapons_animated.tsx"
+        "/home/schererleander/Developer/raylib-shooter/assets/tilesets/surground.tsx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
