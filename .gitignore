@@ -2,12 +2,15 @@
 *.d
 
 # Object files
+obj/
 *.o
 *.ko
 *.obj
 *.elf
 
 # Linker output
+bin/
+result
 *.ilk
 *.map
 *.exp
@@ -17,16 +20,16 @@
 *.pch
 
 # Libraries
-*.lib
-*.a
-*.la
-*.lo
+# *.lib
+# *.a
+# *.la
+# *.lo
 
 # Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
+# *.dll
+# *.so
+# *.so.*
+# *.dylib
 
 # Executables
 *.exe
@@ -41,6 +44,16 @@
 *.su
 *.idb
 *.pdb
+
+# Nix / Dev environment
+.direnv/
+.envrc
+
+# Editor-specific
+.vscode/
+.idea/
+*.swp
+*~
 
 # Kernel Module Compile Results
 *.mod*
