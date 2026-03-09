@@ -1,81 +1,110 @@
 // src/main.c
 #include "raylib.h"
 #define RAYTMX_IMPLEMENTATION
-#include "raytmx.h"
-
 #include "game.h"
+#include "player.h"
+#include "map_manager.h"
+#include "entity.h"
+#include "globals.h"
+
+bool debugMode = false;
 
 int main(void) {
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Dungeon Crawler");
-  SetTargetFPS(60);
+  SetTargetFPS(280);
 
   GameScreen currentScreen = SCREEN_TITLE;
 
-  TmxMap *map = LoadTMX("assets/maps/debug.tmx");
-  if (map == NULL) {
-    CloseWindow();
+	MapManager mapMgr = LoadGameMap("assets/maps/debug.tmx");
+  
+  EntityManager entityMgr = InitEntityManager(100);
+  if (mapMgr.map) {
+    SpawnEntitiesFromMap(&entityMgr, mapMgr.map);
   }
+  
+  RaytmxExternalTileset elfTS = LoadTSX("assets/tilesets/elf.tsx");
+	Player player = { 
+    .position = { 200, 200}, 
+    .speed = 120.0f, 
+    .bounds = { 204, 204, 12, 12 },
+    .tileset = elfTS.tileset,
+    .currentFrame = 0,
+    .frameTime = 0.0f,
+    .state = 0, // idle
+    .facingRight = true
+  };
 
-  Camera2D camera;
-  camera.target.x = (float)(map->width * map->tileWidth) / 2.0f;
-  camera.target.y = (float)(map->height * map->tileHeight) / 2.0f;
+  Camera2D camera = { 0 };
   camera.offset.x = (float)SCREEN_WIDTH / 2.0f;
   camera.offset.y = (float)SCREEN_HEIGHT / 2.0f;
-  camera.rotation = 0.0f;
+  camera.target = player.position;
   camera.zoom = 4.0f;
 
-  const float panSpeed = 20.0f; /* Pixel per second */
-
   while (!WindowShouldClose()) {
+    if (IsKeyPressed(KEY_B)) debugMode = !debugMode;
+    if (IsKeyPressed(KEY_R)) {
+      // Reload map and entities
+      UnloadGameMap(&mapMgr);
+      UnloadEntityManager(&entityMgr);
+      
+      mapMgr = LoadGameMap("assets/maps/debug.tmx");
+      entityMgr = InitEntityManager(100);
+      if (mapMgr.map) {
+        SpawnEntitiesFromMap(&entityMgr, mapMgr.map);
+      }
+      
+      // Reset player position
+      player.position = (Vector2){ 200, 200 };
+      player.bounds = (Rectangle){ 204, 204, 12, 12 };
+    }
+
     switch (currentScreen) {
     case SCREEN_TITLE:
       if (IsKeyPressed(KEY_ENTER))
         currentScreen = SCREEN_PLAYING;
       break;
     case SCREEN_PLAYING:
-      if (IsKeyDown(KEY_UP))
-        camera.target.y += panSpeed * GetFrameTime();
-      if (IsKeyDown(KEY_DOWN))
-        camera.target.y -= panSpeed * GetFrameTime();
-      if (IsKeyDown(KEY_RIGHT))
-        camera.target.x += panSpeed * GetFrameTime();
-      if (IsKeyDown(KEY_LEFT))
-        camera.target.x -= panSpeed * GetFrameTime();
       if (IsKeyDown(KEY_ESCAPE))
         currentScreen = SCREEN_PAUSED;
+			UpdatePlayer(&player, &mapMgr);
+      UpdateEntities(&entityMgr, &player, &mapMgr);
+			camera.target = player.position;
       break;
     case SCREEN_PAUSED:
       if (IsKeyDown(KEY_ESCAPE))
         currentScreen = SCREEN_PLAYING;
       break;
-		case SCREEN_GAME_OVER:
-			if (IsKeyDown(KEY_ENTER))
-				currentScreen = SCREEN_PLAYING;
-			break;
+    case SCREEN_GAME_OVER:
+      if (IsKeyDown(KEY_ENTER))
+        currentScreen = SCREEN_PLAYING;
+      break;
     };
 
     // --- DRAW ---
     BeginDrawing();
-    ClearBackground(BLACK);
-		
-
+    
     switch (currentScreen) {
     case SCREEN_TITLE:
+      ClearBackground(BLACK);
       DrawText("DUNGEON CRAWLER", 20, 20, 40, DARKGRAY);
       break;
-		case SCREEN_PAUSED:
-			DrawText("PAUSED", 20, 20, 40, DARKGRAY);
+    case SCREEN_PAUSED:
+      ClearBackground(BLACK);
+      DrawText("PAUSED", 20, 20, 40, DARKGRAY);
       break;
     case SCREEN_PLAYING:
+      ClearBackground(BACKGROUND_COLOR);
       BeginMode2D(camera);
       {
-				ClearBackground(BACKGROUND_COLOR);
-        AnimateTMX(map);
-        DrawTMX(map, &camera, NULL, 0, 0, WHITE);
+        DrawMap(&mapMgr);
+        DrawEntities(&entityMgr, mapMgr.map);
+				DrawPlayer(&player);
       }
       EndMode2D();
-			break;
+      if (debugMode) DrawFPS(10, 10);
+      break;
     case SCREEN_GAME_OVER:
+      ClearBackground(BLACK);
       DrawText("GAME OVER", 20, 20, 40, RED);
       break;
     }
@@ -83,7 +112,9 @@ int main(void) {
     EndDrawing();
   }
 
-	UnloadTMX(map);
+	UnloadGameMap(&mapMgr);
+  UnloadEntityManager(&entityMgr);
+  UnloadTexture(player.tileset.image.texture);
   CloseWindow();
   return 0;
 }
