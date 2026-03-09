@@ -24,7 +24,7 @@
         in
         {
           default = pkgs.stdenv.mkDerivation {
-            pname = "raylib-shooter";
+            pname = "dungeon-crawler";
             version = "0.1.0";
             src = ./.;
 
@@ -50,7 +50,7 @@
 
             installPhase = ''
               mkdir -p $out/bin
-              cp bin/dungeon_game $out/bin/raylib-shooter
+              cp bin/dungeon_game $out/bin/dungeon-crawler
             '';
           };
         });
@@ -58,7 +58,7 @@
       apps = forEachSystem (system: {
         default = {
           type = "app";
-          program = "${self.packages.${system}.default}/bin/raylib-shooter";
+          program = "${self.packages.${system}.default}/bin/dungeon-crawler";
         };
       });
 
