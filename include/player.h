@@ -15,6 +15,7 @@ typedef struct Player {
   float frameTime;
   int state; // 0: idle, 1: walk, etc.
   bool facingRight;
+
 } Player;
 
 void UpdatePlayer(Player *p, MapManager *mapMgr);

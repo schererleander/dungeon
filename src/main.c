@@ -1,11 +1,12 @@
 // src/main.c
 #include "raylib.h"
 #define RAYTMX_IMPLEMENTATION
-#include "game.h"
-#include "player.h"
-#include "map_manager.h"
 #include "entity.h"
+#include "fairy.h"
+#include "game.h"
 #include "globals.h"
+#include "map_manager.h"
+#include "player.h"
 
 bool debugMode = false;
 
@@ -15,49 +16,34 @@ int main(void) {
 
   GameScreen currentScreen = SCREEN_TITLE;
 
-	MapManager mapMgr = LoadGameMap("assets/maps/debug.tmx");
-  
+  MapManager mapMgr = LoadGameMap("assets/maps/debug.tmx");
+
   EntityManager entityMgr = InitEntityManager(100);
   if (mapMgr.map) {
     SpawnEntitiesFromMap(&entityMgr, mapMgr.map);
   }
-  
-  RaytmxExternalTileset elfTS = LoadTSX("assets/tilesets/elf.tsx");
-	Player player = { 
-    .position = { 200, 200}, 
-    .speed = 120.0f, 
-    .bounds = { 204, 204, 12, 12 },
-    .tileset = elfTS.tileset,
-    .currentFrame = 0,
-    .frameTime = 0.0f,
-    .state = 0, // idle
-    .facingRight = true
-  };
 
-  Camera2D camera = { 0 };
+  RaytmxExternalTileset elfTS = LoadTSX("assets/tilesets/elf.tsx");
+  Player player = {.position = {200, 200},
+                   .speed = 120.0f,
+                   .bounds = {204, 204, 12, 12},
+                   .tileset = elfTS.tileset,
+                   .currentFrame = 0,
+                   .frameTime = 0.0f,
+                   .state = 0, // idle
+                   .facingRight = true};
+
+  Fairy fairy = {.position = player.position, .targetOffset = {0}};
+
+  Camera2D camera = {0};
   camera.offset.x = (float)SCREEN_WIDTH / 2.0f;
   camera.offset.y = (float)SCREEN_HEIGHT / 2.0f;
   camera.target = player.position;
   camera.zoom = 4.0f;
 
   while (!WindowShouldClose()) {
-    if (IsKeyPressed(KEY_B)) debugMode = !debugMode;
-    if (IsKeyPressed(KEY_R)) {
-      // Reload map and entities
-      UnloadGameMap(&mapMgr);
-      UnloadEntityManager(&entityMgr);
-      
-      mapMgr = LoadGameMap("assets/maps/debug.tmx");
-      entityMgr = InitEntityManager(100);
-      if (mapMgr.map) {
-        SpawnEntitiesFromMap(&entityMgr, mapMgr.map);
-      }
-      
-      // Reset player position
-      player.position = (Vector2){ 200, 200 };
-      player.bounds = (Rectangle){ 204, 204, 12, 12 };
-    }
-
+    if (IsKeyPressed(KEY_B))
+      debugMode = !debugMode;
     switch (currentScreen) {
     case SCREEN_TITLE:
       if (IsKeyPressed(KEY_ENTER))
@@ -66,9 +52,10 @@ int main(void) {
     case SCREEN_PLAYING:
       if (IsKeyDown(KEY_ESCAPE))
         currentScreen = SCREEN_PAUSED;
-			UpdatePlayer(&player, &mapMgr);
+      UpdatePlayer(&player, &mapMgr);
+			UpdateFairy(&fairy, player.position);
       UpdateEntities(&entityMgr, &player, &mapMgr);
-			camera.target = player.position;
+      camera.target = player.position;
       break;
     case SCREEN_PAUSED:
       if (IsKeyDown(KEY_ESCAPE))
@@ -82,7 +69,7 @@ int main(void) {
 
     // --- DRAW ---
     BeginDrawing();
-    
+
     switch (currentScreen) {
     case SCREEN_TITLE:
       ClearBackground(BLACK);
@@ -98,10 +85,12 @@ int main(void) {
       {
         DrawMap(&mapMgr);
         DrawEntities(&entityMgr, mapMgr.map);
-				DrawPlayer(&player);
+        DrawPlayer(&player);
+				DrawFairy(&fairy);
       }
       EndMode2D();
-      if (debugMode) DrawFPS(10, 10);
+      if (debugMode)
+        DrawFPS(10, 10);
       break;
     case SCREEN_GAME_OVER:
       ClearBackground(BLACK);
@@ -112,7 +101,7 @@ int main(void) {
     EndDrawing();
   }
 
-	UnloadGameMap(&mapMgr);
+  UnloadGameMap(&mapMgr);
   UnloadEntityManager(&entityMgr);
   UnloadTexture(player.tileset.image.texture);
   CloseWindow();
