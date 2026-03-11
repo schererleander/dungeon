@@ -1,109 +1,70 @@
-// src/main.c
 #include "raylib.h"
 #define RAYTMX_IMPLEMENTATION
-#include "entity.h"
+#include "raytmx.h"
+
+#include "entities.h"
 #include "fairy.h"
-#include "game.h"
-#include "globals.h"
-#include "map_manager.h"
+#include "map.h"
 #include "player.h"
 
-bool debugMode = false;
+#define SCREEN_WIDTH 640
+#define SCREEN_HEIGHT 480
+#define TARGET_FPS 60
 
 int main(void) {
-  InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Dungeon Crawler");
-  SetTargetFPS(280);
+  InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Dungeon");
+  SetTargetFPS(TARGET_FPS);
 
-  GameScreen currentScreen = SCREEN_TITLE;
+  Entities entities = {0};
+  Map *map = LoadMap("assets/maps/debug.tmx", &entities);
 
-  MapManager mapMgr = LoadGameMap("assets/maps/debug.tmx");
+  TraceLog(LOG_INFO, "Entities loaded:");
+  TraceLog(LOG_INFO, "pickups: %d", entities.pickupsCount);
+  TraceLog(LOG_INFO, "keys: %d", entities.keysCount);
+  TraceLog(LOG_INFO, "bats: %d", entities.batsCount);
+  TraceLog(LOG_INFO, "slimes: %d", entities.slimesCount);
+  TraceLog(LOG_INFO, "flying skulls: %d", entities.flyingSkullsCount);
+  TraceLog(LOG_INFO, "vases: %d", entities.vasesCount);
+  TraceLog(LOG_INFO, "crates: %d", entities.cratesCount);
 
-  EntityManager entityMgr = InitEntityManager(100);
-  if (mapMgr.map) {
-    SpawnEntitiesFromMap(&entityMgr, mapMgr.map);
-  }
+  RaytmxExternalTileset playerTileset = LoadTSX("assets/tilesets/elf.tsx");
 
-  RaytmxExternalTileset elfTS = LoadTSX("assets/tilesets/elf.tsx");
-  Player player = {.position = {200, 200},
-                   .speed = 120.0f,
-                   .bounds = {204, 204, 12, 12},
-                   .tileset = elfTS.tileset,
-                   .currentFrame = 0,
-                   .frameTime = 0.0f,
-                   .state = 0, // idle
-                   .facingRight = true};
+  Player player = {.position = {192.0f, 192.0f},
+                   .speed = 80.0f,
+                   .bounds = {185.0f, 184.0f, 13.0f, 16.0f},
+                   .state = PLAYER_IDLE,
+                   .facingRight = true,
+                   .tileset = playerTileset.tileset,
+                   .health = 6,
+                   .maxHealth = 6};
 
-  Fairy fairy = {.position = player.position, .targetOffset = {0}};
+  Fairy fairy = {.position = {player.position.x, player.position.y}};
 
-  Camera2D camera = {0};
-  camera.offset.x = (float)SCREEN_WIDTH / 2.0f;
-  camera.offset.y = (float)SCREEN_HEIGHT / 2.0f;
-  camera.target = player.position;
-  camera.zoom = 4.0f;
+  Camera2D camera = {
+      .offset = {SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f},
+      .target = player.position,
+      .rotation = 0.0f,
+      .zoom = 3.0f,
+  };
 
   while (!WindowShouldClose()) {
-    if (IsKeyPressed(KEY_B))
-      debugMode = !debugMode;
-    switch (currentScreen) {
-    case SCREEN_TITLE:
-      if (IsKeyPressed(KEY_ENTER))
-        currentScreen = SCREEN_PLAYING;
-      break;
-    case SCREEN_PLAYING:
-      if (IsKeyDown(KEY_ESCAPE))
-        currentScreen = SCREEN_PAUSED;
-      UpdatePlayer(&player, &mapMgr);
-			UpdateFairy(&fairy, player.position);
-      UpdateEntities(&entityMgr, &player, &mapMgr);
-      camera.target = player.position;
-      break;
-    case SCREEN_PAUSED:
-      if (IsKeyDown(KEY_ESCAPE))
-        currentScreen = SCREEN_PLAYING;
-      break;
-    case SCREEN_GAME_OVER:
-      if (IsKeyDown(KEY_ENTER))
-        currentScreen = SCREEN_PLAYING;
-      break;
-    };
+    UpdatePlayer(&player, map, &entities);
+		UpdateFairy(&fairy, player.position);
+    camera.target = player.position;
 
-    // --- DRAW ---
     BeginDrawing();
-
-    switch (currentScreen) {
-    case SCREEN_TITLE:
-      ClearBackground(BLACK);
-      DrawText("DUNGEON CRAWLER", 20, 20, 40, DARKGRAY);
-      break;
-    case SCREEN_PAUSED:
-      ClearBackground(BLACK);
-      DrawText("PAUSED", 20, 20, 40, DARKGRAY);
-      break;
-    case SCREEN_PLAYING:
-      ClearBackground(BACKGROUND_COLOR);
-      BeginMode2D(camera);
-      {
-        DrawMap(&mapMgr);
-        DrawEntities(&entityMgr, mapMgr.map);
-        DrawPlayer(&player);
-				DrawFairy(&fairy);
-      }
-      EndMode2D();
-      if (debugMode)
-        DrawFPS(10, 10);
-      break;
-    case SCREEN_GAME_OVER:
-      ClearBackground(BLACK);
-      DrawText("GAME OVER", 20, 20, 40, RED);
-      break;
-    }
-
+    ClearBackground(BLACK);
+    BeginMode2D(camera);
+    DrawMap(map);
+    DrawPickups(&entities, map);
+    DrawKeys(&entities, map);
+    DrawPlayer(&player);
+    DrawFairy(&fairy);
+    EndMode2D();
     EndDrawing();
   }
 
-  UnloadGameMap(&mapMgr);
-  UnloadEntityManager(&entityMgr);
-  UnloadTexture(player.tileset.image.texture);
+  UnloadMap(map);
   CloseWindow();
   return 0;
 }
