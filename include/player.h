@@ -1,24 +1,33 @@
-#ifndef PLAYER_H
-#define PLAYER_H
+#pragma once
 
-#include "map_manager.h"
 #include "raylib.h"
+#include "raytmx.h"
 
-typedef struct Player {
+#include "map.h"
+
+typedef enum { PLAYER_IDLE, PLAYER_WALK, PLAYER_ATTACK } PlayerState;
+
+typedef struct {
+  int potions;
+  int bombs;
+  int currency;
+} Inventory;
+
+typedef struct {
   Vector2 position;
   float speed;
   Rectangle bounds;
-  
-  // Animation state
+
   TmxTileset tileset;
   int currentFrame;
   float frameTime;
-  int state; // 0: idle, 1: walk, etc.
+  PlayerState state;
   bool facingRight;
 
+  int health;
+  int maxHealth;
+  Inventory inventory;
 } Player;
 
-void UpdatePlayer(Player *p, MapManager *mapMgr);
-void DrawPlayer(Player *p);
-
-#endif
+void UpdatePlayer(Player *player, Map *map, struct Entities *entities);
+void DrawPlayer(Player *player);
