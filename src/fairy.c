@@ -3,7 +3,6 @@
 #include <math.h>
 
 #include "fairy.h"
-#include "globals.h"
 
 #define FAIRY_WAND_RADIUS 20
 #define FAIRY_STAY_MIN 1
@@ -34,11 +33,6 @@ void DrawFairy(Fairy *fairy) {
   float bob = sin(GetTime() * FAIRY_BOB_SPEED) * FAIRY_BOB_HEIGHT;
   int x = (int)fairy->position.x;
   int y = (int)(fairy->position.y + bob);
-
-  if (debugMode) {
-    DrawCircleV(fairy->targetWorld, 1, RED);
-    DrawCircleV(fairy->position, 1, GREEN);
-  }
 
   // Outer cross glow
   DrawRectangle(x, y - 3, 1, 7, (Color){140, 180, 255, 40});

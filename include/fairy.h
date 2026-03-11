@@ -1,18 +1,14 @@
-#ifndef FAIRY_H
-#define FAIRY_H
+#pragma once
 
 #include "raylib.h"
 
+typedef struct {
+  Vector2 position;
+  Vector2 targetOffset;
+  Vector2 targetWorld;
 
-typedef struct Fairy {
-	Vector2 position;
-	Vector2 targetOffset;
-	Vector2 targetWorld;
-
-	float wandTimer;
+  float wandTimer;
 } Fairy;
 
-void UpdateFairy(Fairy *Fairy, Vector2 playerWorldPosition);
-void DrawFairy(Fairy *Fairy);
-
-#endif // FAIRY_H
+void UpdateFairy(Fairy *fairy, Vector2 playerWorldPosition);
+void DrawFairy(Fairy *fairy);
