@@ -14,10 +14,11 @@ int main(void) {
   SetTargetFPS(TARGET_FPS);
 
   Entities entities = {0};
-  Map *map = LoadMap("assets/maps/debug.tmx", &entities);
+  Map map = LoadMap("assets/maps/debug.tmx", &entities);
 
-  Marker *spawn = FindMarker(map, "player_spawn");
+  Marker *spawn = FindMarker(&map, "player_spawn");
   Vector2 spawnPos = spawn ? spawn->position : (Vector2){0, 0};
+
 
   RaytmxExternalTileset playerTileset = LoadTSX("assets/tilesets/elf.tsx");
   Player player = {.position = spawnPos,
@@ -39,16 +40,16 @@ int main(void) {
   };
 
   while (!WindowShouldClose()) {
-    UpdatePlayer(&player, map, &entities);
+    UpdatePlayer(&player, &map, &entities);
 		UpdateFairy(&fairy, player.position);
     camera.target = player.position;
 
     BeginDrawing();
     ClearBackground(BLACK);
     BeginMode2D(camera);
-    DrawMap(map);
-    DrawPickups(&entities, map);
-    DrawKeys(&entities, map);
+    DrawMap(&map);
+    DrawPickups(&entities, &map);
+    DrawKeys(&entities, &map);
     DrawPlayer(&player);
     DrawFairy(&fairy);
     EndMode2D();
@@ -56,6 +57,7 @@ int main(void) {
   }
 
   UnloadMap(map);
+
   CloseWindow();
   return 0;
 }

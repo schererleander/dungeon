@@ -19,7 +19,7 @@ typedef struct {
 
 typedef struct Entities Entities;
 
-Map *LoadMap(const char *filename, Entities *entities);
+Map LoadMap(const char *filename, Entities *entities);
 
 bool isCollision(Map *map, Rectangle bounds);
 
@@ -29,4 +29,4 @@ void DrawKeys(Entities *entities, Map *map);
 
 Marker *FindMarker(Map *map, const char *name);
 
-void UnloadMap(Map *map);
+void UnloadMap(Map map);

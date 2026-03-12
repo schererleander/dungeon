@@ -6,7 +6,6 @@
 #include "raytmx.h"
 
 #include <assert.h>
-#include <stdlib.h>
 #include <string.h>
 
 static TmxLayer *FindLayerByName(TmxMap *map, const char *name) {
@@ -115,34 +114,30 @@ static void LoadMarkers(Map *map, TmxLayer *layer) {
   }
 }
 
-Map *LoadMap(const char *filename, Entities *entities) {
-  Map *map = (Map *)malloc(sizeof(Map));
-  if (!map)
-    return NULL;
+Map LoadMap(const char *filename, Entities *entities) {
+  Map map = {0};
 
-  map->map = LoadTMX(filename);
-  if (!map->map) {
-    free(map);
-    return NULL;
-  }
+  map.map = LoadTMX(filename);
+  if (!map.map)
+    return map;
 
-  map->wallLayer = FindLayerByName(map->map, "Walls");
-  map->groundLayer = FindLayerByName(map->map, "Ground");
-  map->decorLayer = FindLayerByName(map->map, "Decor");
+  map.wallLayer = FindLayerByName(map.map, "Walls");
+  map.groundLayer = FindLayerByName(map.map, "Ground");
+  map.decorLayer = FindLayerByName(map.map, "Decor");
 
   if (entities) {
-    TmxLayer *pickupsLayer = FindLayerByName(map->map, "Pickups");
+    TmxLayer *pickupsLayer = FindLayerByName(map.map, "Pickups");
     if (pickupsLayer)
-      LoadPickups(map->map, pickupsLayer, entities);
+      LoadPickups(map.map, pickupsLayer, entities);
 
-    TmxLayer *itemsLayer = FindLayerByName(map->map, "Items");
+    TmxLayer *itemsLayer = FindLayerByName(map.map, "Items");
     if (itemsLayer)
-      LoadKeys(map->map, itemsLayer, entities);
+      LoadKeys(map.map, itemsLayer, entities);
   }
 
-  TmxLayer *markersLayer = FindLayerByName(map->map, "Markers");
+  TmxLayer *markersLayer = FindLayerByName(map.map, "Markers");
   if (markersLayer)
-    LoadMarkers(map, markersLayer);
+    LoadMarkers(&map, markersLayer);
 
   return map;
 }
@@ -212,12 +207,10 @@ Marker *FindMarker(Map *map, const char *name) {
   for (int i = 0; i < map->markersCount; i++)
     if (strcmp(map->markers[i].name, name) == 0)
       return &map->markers[i];
+	TraceLog(2, "Marker not found");
   return NULL;
 }
 
-void UnloadMap(Map *map) {
-  if (!map)
-    return;
-  UnloadTMX(map->map);
-  free(map);
+void UnloadMap(Map map) {
+  UnloadTMX(map.map);
 }
