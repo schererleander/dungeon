@@ -5,7 +5,7 @@
 
 #include "map.h"
 
-typedef enum { PLAYER_IDLE, PLAYER_WALK, PLAYER_ATTACK } PlayerState;
+typedef enum { PLAYER_IDLE, PLAYER_WALK, PLAYER_ATTACK, PLAYER_DIE, PLAYER_FALL } PlayerState;
 
 typedef struct {
   int potions;

@@ -2,36 +2,27 @@
 #define RAYTMX_IMPLEMENTATION
 #include "raytmx.h"
 
+#include "globals.h"
 #include "entities.h"
 #include "fairy.h"
 #include "map.h"
 #include "player.h"
 
-#define SCREEN_WIDTH 640
-#define SCREEN_HEIGHT 480
-#define TARGET_FPS 60
 
 int main(void) {
-  InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Dungeon");
+  InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, GAME_NAME);
   SetTargetFPS(TARGET_FPS);
 
   Entities entities = {0};
   Map *map = LoadMap("assets/maps/debug.tmx", &entities);
 
-  TraceLog(LOG_INFO, "Entities loaded:");
-  TraceLog(LOG_INFO, "pickups: %d", entities.pickupsCount);
-  TraceLog(LOG_INFO, "keys: %d", entities.keysCount);
-  TraceLog(LOG_INFO, "bats: %d", entities.batsCount);
-  TraceLog(LOG_INFO, "slimes: %d", entities.slimesCount);
-  TraceLog(LOG_INFO, "flying skulls: %d", entities.flyingSkullsCount);
-  TraceLog(LOG_INFO, "vases: %d", entities.vasesCount);
-  TraceLog(LOG_INFO, "crates: %d", entities.cratesCount);
+  Marker *spawn = FindMarker(map, "player_spawn");
+  Vector2 spawnPos = spawn ? spawn->position : (Vector2){0, 0};
 
   RaytmxExternalTileset playerTileset = LoadTSX("assets/tilesets/elf.tsx");
-
-  Player player = {.position = {192.0f, 192.0f},
+  Player player = {.position = spawnPos,
                    .speed = 80.0f,
-                   .bounds = {185.0f, 184.0f, 13.0f, 16.0f},
+                   .bounds = {player.position.x, player.position.y, playerTileset.tileset.tileWidth - 4, playerTileset.tileset.tileHeight},
                    .state = PLAYER_IDLE,
                    .facingRight = true,
                    .tileset = playerTileset.tileset,

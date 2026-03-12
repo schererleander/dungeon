@@ -34,7 +34,7 @@ typedef struct {
 typedef struct {
   Vector2 position;
   Rectangle bounds;
-  int uniqueId;
+  char* uniqueId;
   bool active;
   uint32_t gid;
 } Key;
