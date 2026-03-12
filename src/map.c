@@ -35,8 +35,8 @@ static PickupType GetPickupTypeByTileId(int tileId) {
   return PICKUP_COIN;
 }
 
-static Rectangle GetTileBounds(TmxTileset *tileset, uint32_t tileId, float worldX,
-                               float worldY) {
+static Rectangle GetTileBounds(TmxTileset *tileset, uint32_t tileId,
+                               float worldX, float worldY) {
   for (uint32_t i = 0; i < tileset->tilesLength; i++) {
     if (tileset->tiles[i].id == tileId) {
       TmxObjectGroup *og = &tileset->tiles[i].objectGroup;
@@ -97,9 +97,21 @@ static void LoadKeys(TmxMap *tmxMap, TmxLayer *layer, Entities *entities) {
     Key *k = &entities->keys[entities->keysCount++];
     k->position = (Vector2){x, y};
     k->bounds = GetTileBounds(tileset, tileId, x, y);
-    k->uniqueId = (int)object->id;
+    k->uniqueId = object->name;
     k->active = true;
     k->gid = (uint32_t)object->gid;
+  }
+}
+
+static void LoadMarkers(Map *map, TmxLayer *layer) {
+  TmxObjectGroup *group = &layer->exact.objectGroup;
+  for (uint32_t i = 0; i < group->objectsLength; i++) {
+    TmxObject *object = &group->objects[i];
+    if (object->type != OBJECT_TYPE_POINT || map->markersCount >= MAX_MARKERS)
+      continue;
+
+    map->markers[map->markersCount++] =
+        (Marker){.position = {object->x, object->y}, .name = object->name};
   }
 }
 
@@ -128,6 +140,10 @@ Map *LoadMap(const char *filename, Entities *entities) {
       LoadKeys(map->map, itemsLayer, entities);
   }
 
+  TmxLayer *markersLayer = FindLayerByName(map->map, "Markers");
+  if (markersLayer)
+    LoadMarkers(map, markersLayer);
+
   return map;
 }
 
@@ -147,9 +163,12 @@ void DrawMap(Map *map) {
 
   TmxLayer layers[3];
   uint32_t count = 0;
-  if (map->groundLayer) layers[count++] = *map->groundLayer;
-  if (map->wallLayer)   layers[count++] = *map->wallLayer;
-  if (map->decorLayer)  layers[count++] = *map->decorLayer;
+  if (map->groundLayer)
+    layers[count++] = *map->groundLayer;
+  if (map->wallLayer)
+    layers[count++] = *map->wallLayer;
+  if (map->decorLayer)
+    layers[count++] = *map->decorLayer;
   DrawTMXLayers(map->map, NULL, NULL, layers, count, 0, 0, WHITE);
 }
 
@@ -187,6 +206,13 @@ void DrawKeys(Entities *entities, Map *map) {
       continue;
     DrawTileByGid(map->map, k->gid, k->position.x, k->position.y);
   }
+}
+
+Marker *FindMarker(Map *map, const char *name) {
+  for (int i = 0; i < map->markersCount; i++)
+    if (strcmp(map->markers[i].name, name) == 0)
+      return &map->markers[i];
+  return NULL;
 }
 
 void UnloadMap(Map *map) {

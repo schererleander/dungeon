@@ -44,9 +44,9 @@
         },
         "/home/schererleander/Developer/dungeon/assets/maps/debug.tmx": {
             "scale": 8,
-            "selectedLayer": 5,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 241.625,
+                "x": 241.875,
                 "y": 233.1875
             }
         },
