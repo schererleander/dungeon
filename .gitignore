@@ -1,6 +1,9 @@
 # Prerequisites
 *.d
 
+# Build dir
+build/
+
 # Object files
 obj/
 *.o
